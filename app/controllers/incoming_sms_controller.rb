@@ -100,7 +100,7 @@ class IncomingSmsController < ApplicationController
         sfr_box_login_hash = Digest::SHA256.hexdigest ENV["SFR_BOX_LOGIN"]
         sfr_box_password_hash = Digest::SHA256.hexdigest ENV["SFR_BOX_PASSWORD"]
 
-        digest  = OpenSSL::Digest::Digest.new('sha256')
+        digest  = OpenSSL::Digest.new('sha256')
         hash_1 = OpenSSL::HMAC.hexdigest(digest, challenge, sfr_box_login_hash)
         hash_2 = OpenSSL::HMAC.hexdigest(digest, challenge, sfr_box_password_hash)
 
