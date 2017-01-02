@@ -24,7 +24,7 @@ RSpec.describe TwilioHelper, :type => :helper do
             }
             # The X-Twilio-Signature header attached to the request
             twilio_signature = 'UGyPwJZ04FuAq4ZF/etv08weZOo='
-            expect(TwilioHelper.validate_request(auth_token, url, params, twilio_signature)).to eq(true)
+            expect(TwilioHelper.validate_params(auth_token, url, params, twilio_signature)).to eq(true)
         end
     end
 end

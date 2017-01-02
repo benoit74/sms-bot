@@ -19,9 +19,13 @@ params = {
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 =end
 
-    def TwilioHelper.validate_request(auth_token, url, params, signature)
+    def TwilioHelper.validate_params(auth_token, url, params, signature)
         validator = Twilio::Util::RequestValidator.new(auth_token)
         return validator.validate(url, params, signature)
+    end
+
+    def TwilioHelper.validate_request(request)
+        return TwilioHelper.validate_params(ENV['TWILIO_AUTH_TOKEN'], request.original_url, request.request_parameters, request.headers["HTTP_X_TWILIO_SIGNATURE"])
     end
 
 end

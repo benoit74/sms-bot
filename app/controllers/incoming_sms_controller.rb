@@ -3,7 +3,7 @@ require 'twilio-ruby'
 class IncomingSmsController < ApplicationController
 
     def create
-        if !TwilioHelper.validate_request(ENV['TWILIO_AUTH_TOKEN'], request.original_url, request.request_parameters, request.headers["HTTP_X_TWILIO_SIGNATURE"])
+        if !TwilioHelper.validate_request(request)
             respond_nok
         else
             respond_ok
@@ -21,7 +21,7 @@ class IncomingSmsController < ApplicationController
     # Something went wront
     def respond_nok
         response = Twilio::TwiML::Response.new
-        render xml:response.text, status: 401
+        render plain:nil, status: 401
     end
 
 end
