@@ -15,7 +15,27 @@ class IncomingSmsController < ApplicationController
         else
             logger.info "Valid twilio request received"
         end
-           
+
+        body = request.request_parameters["Body"]
+        logger.info(body)
+        body_terms = body.downcase.split
+            
+        if body_terms[0] != "wifi_sched"
+            logger.info "Invalid command received"
+            respond_nok
+            return
+        else
+            logger.info "Valid command received"
+        end
+
+        if body_terms[1] != "on" && body_terms[1] != "off"
+            logger.info "Invalid command parameters received"
+            respond_nok
+            return
+        else
+            logger.info "Valid command parameters received"
+        end
+
         begin
             file = open('http://' + ENV['SFR_BOX_IP'], :read_timeout => 1)
         rescue OpenURI::HTTPError => the_error
@@ -31,8 +51,6 @@ class IncomingSmsController < ApplicationController
         else
             logger.info "Application is connected to the right network and SFR box is available"
         end
-
-
 
         uri = URI.parse('http://' + ENV['SFR_BOX_IP'] + '/login')
 
@@ -80,6 +98,21 @@ class IncomingSmsController < ApplicationController
 
         if !response.kind_of? Net::HTTPFound
             logger.info "Failed to login into SFR Box"
+            respond_nok
+            return
+        end
+
+        uri = URI.parse('http://' + ENV['SFR_BOX_IP'] + '/eco/wifisched')
+        request = Net::HTTP::Post.new(uri.request_uri)
+        request.add_field("Cookie", "sid="+challenge)
+        request.set_form_data({
+            "wh_enable" => body_terms[1],
+            "weekplanner_activate" => ""})
+
+        response = http.request(request)
+
+        if !response.kind_of? Net::HTTPSuccess
+            logger.info "Failed to alter status of WIFI schedule"
             respond_nok
             return
         end
