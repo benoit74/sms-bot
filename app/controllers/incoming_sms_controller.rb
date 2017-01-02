@@ -16,6 +16,23 @@ class IncomingSmsController < ApplicationController
             logger.info "Valid twilio request received"
         end
 
+        if !ENV['TWILIO_SENDERS']
+            logger.info "List of approved senders is missing from ENV"
+            respond_nok
+            return
+        end
+
+        allowed_senders = ENV['TWILIO_SENDERS'].split
+        sender = request.request_parameters["From"]
+        if !allowed_senders.include? sender
+            logger.info "Sender not allowed"
+            respond_nok
+            return
+        else
+            logger.info "Sender approved"
+        end
+
+
         body = request.request_parameters["Body"]
         logger.info(body)
         body_terms = body.downcase.split
@@ -66,6 +83,8 @@ class IncomingSmsController < ApplicationController
             logger.info "Failed to request challenge for login"
             respond_nok
             return
+        else
+            logger.info "Challenge requested for login"
         end
 
         challenge = response.body[/.*<challenge>(.*)<\/challenge>/,1]
@@ -74,6 +93,8 @@ class IncomingSmsController < ApplicationController
             logger.info "Failed to find challenge in reply\n" + response.body
             respond_nok
             return
+        else
+            logger.info "Challenge received successfully"
         end
         
         sfr_box_login_hash = Digest::SHA256.hexdigest ENV["SFR_BOX_LOGIN"]
@@ -100,6 +121,8 @@ class IncomingSmsController < ApplicationController
             logger.info "Failed to login into SFR Box"
             respond_nok
             return
+        else
+            logger.info "Login into SFR Box suceeded"
         end
 
         uri = URI.parse('http://' + ENV['SFR_BOX_IP'] + '/eco/wifisched')
@@ -112,9 +135,11 @@ class IncomingSmsController < ApplicationController
         response = http.request(request)
 
         if !response.kind_of? Net::HTTPSuccess
-            logger.info "Failed to alter status of WIFI schedule"
+            logger.info "Failed to alter WIFI schedule status"
             respond_nok
             return
+        else
+            logger.info "WIFI schedule status updated"
         end
 
         respond_ok
