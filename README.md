@@ -1,24 +1,14 @@
 # sms-bot
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is a small bot, meant to run in conjonction with a mobile phone number on a Twilio account.
 
-Things you may want to cover:
+Current only feature is the switch on/off of the wifi scheduling on the french SFR Box.
 
-* Ruby version
+This allows me to:
+- have a fairly strict wifi scheduling (turned on only few hours per day)
+- force it to be turned on when I need to, simply by sending a hand-crafted SMS to my Twilio number, i.e. without having to connect with a cable to the box, etc...
+- turn it back off when I don't need it anymore
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Of course, the device on which the code is running must be:
+- on my local network to be able to connect to the SFR Box admin panel
+- connected to the box via an Ethernet cable (no wifi :o))
